@@ -23,28 +23,65 @@ export const Contact = () => {
     });
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setButtonText("Sending...");
+  //   let response = await fetch("https://formspree.io/f/mbjbzrnj", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json;charset=utf-8",
+  //     },
+  //     body: JSON.stringify(formDetails),
+  //   });
+  //   setButtonText("Send");
+  //   let result = await response.json();
+  //   setFormDetails(formInitialDetails);
+
+  //   console.log(result);
+
+  //   if (result.code === 200) {
+  //     setStatus({ success: true, message: "Message sent successfully" });
+  //   } else {
+  //     setStatus({
+  //       success: false,
+  //       message: "Something went wrong, please try again later.",
+  //     });
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setButtonText("Sending...");
-    let response = await fetch("https://formspree.io/f/mbjbzrnj", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json;charset=utf-8",
-      },
-      body: JSON.stringify(formDetails),
-    });
-    setButtonText("Send");
-    let result = await response.json();
-    setFormDetails(formInitialDetails);
 
-    if (result.code === 200) {
-      setStatus({ success: true, message: "Message sent successfully" });
-    } else {
+    try {
+      let response = await fetch("https://formspree.io/f/mbjbzrnj", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json;charset=utf-8",
+        },
+        body: JSON.stringify(formDetails),
+      });
+
+      setButtonText("Send");
+
+      if (response.ok) {
+        setStatus({ success: true, message: "Message sent successfully" });
+      } else {
+        setStatus({
+          success: false,
+          message: "Something went wrong, please try again later.",
+        });
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+      setButtonText("Send");
       setStatus({
         success: false,
         message: "Something went wrong, please try again later.",
       });
     }
+
+    setFormDetails(formInitialDetails);
   };
 
   return (
@@ -131,7 +168,9 @@ export const Contact = () => {
                       {status.message && (
                         <Col>
                           <p
-                            className={status === false ? "success" : "danger"}
+                            className={
+                              status.success === true ? "success" : "danger"
+                            }
                           >
                             {status.message}
                           </p>
